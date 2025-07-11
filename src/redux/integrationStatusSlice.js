@@ -11,7 +11,7 @@ export const integrationStatusSlice = createSlice({
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
-      state.value[action.payload.integrationId] = {
+      state.value[action.payload.id] = {
         ...action.payload,
         // Add a timestamp to the payload
         timestamp: new Date().toISOString()

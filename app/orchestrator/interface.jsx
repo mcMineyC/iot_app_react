@@ -15,8 +15,9 @@ export const OrchestratorProvider = ({ children }) => {
     //     console.log("No api found to interface with native :(")
     //     orchestratorInterface = new dummyAPI();
     // }
-    let orchestratorInterface = new mqttAPI(dispatch);
-    window.api = orchestratorInterface;
+    let orchestratorInterface = mqttAPI.getInstance(dispatch);
+    console.log("Rebuilding orchestrator provider")
+    // window.api = orchestratorInterface;
     
     return (
         <OrchestratorContext.Provider value={orchestratorInterface}>

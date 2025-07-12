@@ -1,0 +1,19 @@
+:root{
+  --bg: #15191e;
+  --layer1: #1d1f21;
+}
+
+.surface {
+  background-color: var(--bg);
+}
+
+.card {
+  background-color: var(--layer1);
+}
+
+.bg-green-accent {
+  background-color: var(--color-green-400);
+}
+.bg-red-accent {
+  background-color: var(--color-red-400);
+}

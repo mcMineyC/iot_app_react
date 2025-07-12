@@ -1,0 +1,17 @@
+.btn {
+  /* @apply text-primary-foreground ring-offset-background focus-visible:ring-ring focus-visible:ring-offset-2 */
+  @apply border-sky-500 border-b-4 active:border-b-0 inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 uppercase tracking-wide h-11 px-4 py-2;
+  @extend btn-blue;
+}
+.btn-blue{
+  @apply border-sky-500 bg-sky-400;
+  @apply hover:bg-sky-400/90;
+}
+.btn-red{
+  @apply border-red-600 bg-red-500;
+  @apply hover:bg-red-500/90;
+}
+.btn-green{
+  @apply border-green-600 bg-green-500;
+  @apply hover:bg-green-500/90;
+}

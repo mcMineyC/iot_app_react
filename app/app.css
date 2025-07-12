@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@plugin "daisyui";
+@import "./styles/buttons.css";
+@import "./styles/colors.css";
+
+@theme {
+  --font-sans: "Jetbrains Mono"
+  /* --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, */
+  /*   "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; */
+}
+
+html,
+body {
+  /* @apply bg-white dark:bg-gray-950; */
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}

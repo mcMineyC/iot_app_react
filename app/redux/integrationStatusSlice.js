@@ -13,6 +13,7 @@ export const integrationStatusSlice = createSlice({
       // immutable state based off those changes
       state.value[action.payload.id] = {
         ...action.payload,
+        hasError: action.payload.error !== 0,
         // Add a timestamp to the payload
         timestamp: new Date().toISOString()
       }
@@ -23,6 +24,7 @@ export const integrationStatusSlice = createSlice({
       for (const [key, value] of Object.entries(data)) {
         state.value[key] = {
           ...value,
+          hasError: value.error !== 0,
           timestamp: new Date().toISOString() // Add a timestamp to each integration
         }
       }

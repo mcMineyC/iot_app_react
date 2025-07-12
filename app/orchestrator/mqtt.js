@@ -1,7 +1,7 @@
 import { updateIntegrations, updateIntegration } from "../redux/integrationStatusSlice";
 import mqtt from "mqtt";
-import QueuedProcessor from "../queue";
-import RouteMatcher from "../routing";
+import QueuedProcessor from "../utils/queue";
+import RouteMatcher from "../utils/routing";
 
 function log(...parts){
   if(true)
@@ -50,6 +50,7 @@ class OrchestratorApi {
       console.log("MQTT has connected")
       this.connected = true;
       this.queue.allowProcessing();
+      this.getIntegrationStatus();
     })
     this.mqtt.on("disconnect", ()=> {
       console.log("MQTT disconnected");
@@ -83,6 +84,16 @@ class OrchestratorApi {
     log("Starting integration with ID:", id)
     this.sendMessage(`/orchestrator/integration/start`, id);
   }
+  static instance = null;
+  static getInstance(dispatch) {
+        // Check if an instance already exists.
+        // If not, create one.
+        if (this.instance === null) {
+            this.instance = new OrchestratorApi(dispatch);
+        }
+        // Return the instance.
+        return this.instance;
+    }
 }
 
 export default OrchestratorApi;

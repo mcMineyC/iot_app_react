@@ -29,8 +29,10 @@ class OrchestratorApi {
       console.log(list)
       this.dispatch(updateIntegration(message))
     },
-    "/orchestrator/fullState": (message) => {
-      this.dispatch(updateState(message))
+    "/orchestrator/state": (message) => {
+      console.log("We have el state", message)
+      this.dispatch(updateState(message.integrationStates))
+      this.dispatch(updateIntegration(message.integrations))
     },
     "/orchestrator/status/:integrationId": (message, params) => {
       this.dispatch(updateIntegration({[params.integrationId]: message}))
@@ -59,8 +61,7 @@ class OrchestratorApi {
       console.log("MQTT has connected")
       this.connected = true;
       this.queue.allowProcessing();
-      this.getIntegrationStatus();
-      this.getIntegrationState();
+      this.getFullState();
     })
     this.mqtt.on("disconnect", ()=> {
       console.log("MQTT disconnected");
@@ -81,8 +82,8 @@ class OrchestratorApi {
     })
   }
 
-  getIntegrationState() {
-    this.sendMessage("/orchestrator/getdata/fullState", "")
+  getFullState() {
+    this.sendMessage("/orchestrator/getdata/state", "")
   }
   getIntegrationStatus() {
     this.sendMessage("/orchestrator/getdata/fullStatus", "")

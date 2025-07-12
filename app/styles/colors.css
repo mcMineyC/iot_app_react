@@ -1,6 +1,8 @@
 :root{
   --bg: #15191e;
-  --layer1: #1d1f21;
+  --layer1: rgba(255,255,255,0.05);
+  /* --layer1: #1d1f21; */
+  /* --layer1: #1c3554; */
 }
 
 .surface {
@@ -8,6 +10,10 @@
 }
 
 .card {
+  background-color: var(--layer1);
+}
+
+header {
   background-color: var(--layer1);
 }
 

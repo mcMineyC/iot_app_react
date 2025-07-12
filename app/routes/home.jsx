@@ -3,6 +3,8 @@ import { NavLink } from "react-router";
 import {useOrchestrator} from "../orchestrator/interface.jsx";
 import { useSelector } from 'react-redux';
 
+import {PrimaryButton} from "../components/button.jsx";
+
 export function meta({}) {
   return [
     { title: "IoT App" },
@@ -13,12 +15,17 @@ export function meta({}) {
 export default function Home() {
   var orchestrator = useOrchestrator();
   const state = useSelector((state) => state.state.value);
-  console.log("State:")
+  const integrations = useSelector((state) => state.integrationStatus.value);
   console.log(state)
   return (
     <div>
       <h1>Hello.  This is index</h1>
-      <NavLink to="/integrations" end>Go to integration page</NavLink>
+      <PrimaryButton><NavLink to="/integrations" end>Go to integration page</NavLink></PrimaryButton>
+      {Object.entries(state).map(([id, integrationState]) => (
+        <div key={id}>
+          <span>{integrations[id].name} - {integrationState.powerState}</span>
+        </div>
+      ))}
     </div>
   );
 }

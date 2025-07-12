@@ -23,8 +23,11 @@ export const stateSlice = createSlice({
       const data = action.payload;
       for (const [key, value] of Object.entries(data)) {
         state.value[key] = {
-          ...value,
           timestamp: new Date().toISOString() // Add a timestamp to each integration
+        }
+        for(const [path, data] of Object.entries(value)){
+          console.log(key)
+          state.value[key][path.substring(1)] = JSON.parse(data)
         }
       }
     }

@@ -17,3 +17,6 @@
 .bg-red-accent {
   background-color: var(--color-red-400);
 }
+.bg-yellow-accent {
+  background-color: var(--color-yellow-400);
+}

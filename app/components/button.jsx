@@ -2,6 +2,6 @@ import React from 'react';
 
 export const PrimaryButton = function (props){
   return (
-    <button className={"btn btn-"+props.color} {...props}/>
+    <button {...props} className={"btn btn-"+props.color+" "+props.className}/>
   );
 }

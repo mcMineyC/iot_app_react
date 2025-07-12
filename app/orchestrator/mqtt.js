@@ -1,4 +1,5 @@
 import { updateIntegrations, updateIntegration } from "../redux/integrationStatusSlice";
+import { updateState } from "../redux/stateSlice";
 import mqtt from "mqtt";
 import QueuedProcessor from "../utils/queue";
 import RouteMatcher from "../utils/routing";
@@ -26,15 +27,23 @@ class OrchestratorApi {
         })
       })
       console.log(list)
-      this.dispatch(updateIntegrations(message))
+      this.dispatch(updateIntegration(message))
+    },
+    "/orchestrator/fullState": (message) => {
+      this.dispatch(updateState(message))
     },
     "/orchestrator/status/:integrationId": (message, params) => {
-      console.log("Integration status update!")
-      console.log({...message, id: params.integrationId})
-      this.dispatch(updateIntegration({...message, id: params.integrationId}))
+      this.dispatch(updateIntegration({[params.integrationId]: message}))
     },
-    "/:integrationId/online": (message, params) => {
-      console.log(params);
+    "/orchestrator/integration/:integrationId/online": (message, params) => {
+      if(message)
+        console.log(params.integrationId, "is online");
+      else
+        console.log(params.integrationId, "is offline");
+    },
+    "/:integrationId/powerState": (message, params) => {
+      console.log("Integration", params.integrationId, "is now", message)
+      this.dispatch(updateState({[params.integrationId]: {powerState: message}}))
     }
   })
   constructor(dispatch){
@@ -51,6 +60,7 @@ class OrchestratorApi {
       this.connected = true;
       this.queue.allowProcessing();
       this.getIntegrationStatus();
+      this.getIntegrationState();
     })
     this.mqtt.on("disconnect", ()=> {
       console.log("MQTT disconnected");
@@ -70,8 +80,9 @@ class OrchestratorApi {
       }
     })
   }
-  sendMessage(topic, message){
-    this.queue.add({topic, message})
+
+  getIntegrationState() {
+    this.sendMessage("/orchestrator/getdata/fullState", "")
   }
   getIntegrationStatus() {
     this.sendMessage("/orchestrator/getdata/fullStatus", "")
@@ -83,6 +94,15 @@ class OrchestratorApi {
   startIntegration(id) {
     log("Starting integration with ID:", id)
     this.sendMessage(`/orchestrator/integration/start`, id);
+  }
+
+  togglePowerState(id){
+    log("Toggling", id, "power state")
+    this.sendMessage(`/${id}/power/toggle`, "")
+  }
+
+  sendMessage(topic, message){
+    this.queue.add({topic, message})
   }
   static instance = null;
   static getInstance(dispatch) {

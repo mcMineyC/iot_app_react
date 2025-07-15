@@ -1,1 +1,10 @@
-@import "switch.css";
+@import "./switch.css";
+.integration-card{
+    margin: 0.5rem;
+    /* background-color: red; */
+    width: var(--container-3xs);
+    height: var(--container-sm);
+    max-width: var(--container-3xs);
+    max-height: var(--container-sm);
+    aspect-ratio: 1 / 3;
+}

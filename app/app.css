@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui";
-@import "./styles/buttons.css";
-@import "./styles/colors.css";
+@import "./styles/styles.css";
 
 @theme {
   --font-sans: "Jetbrains Mono"

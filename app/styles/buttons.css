@@ -15,6 +15,18 @@
   @apply border-green-600 bg-green-500;
   @apply hover:bg-green-500/90;
 }
+@media (prefers-color-scheme: light){
+  .btn-white{
+    @apply border-gray-300 bg-gray-500;
+    @apply hover:bg-gray-500/90;
+  }
+}
+@media (prefers-color-scheme: dark){
+  .btn-white{
+    @apply border-gray-900 bg-gray-800;
+    @apply hover:bg-gray-900/90;
+  }
+}
 
 .square{
   aspect-ratio: 1/1;

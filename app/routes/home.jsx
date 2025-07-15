@@ -4,6 +4,7 @@ import {useOrchestrator} from "../orchestrator/interface.jsx";
 import { useSelector } from 'react-redux';
 
 import {PrimaryButton} from "../components/button.jsx";
+import { Switch } from "../components/integrationComponents/switch.jsx";
 
 export function meta({}) {
   return [
@@ -25,6 +26,10 @@ export default function Home() {
         <div key={id}>
           <span>{integrations[id].name} - {integrationState.powerState}</span>
         </div>
+      ))}
+      <h2>Integrations</h2>
+      {Object.keys(integrations).map((integrationId) => (
+        <Switch key={integrationId} integrationId={integrationId} />
       ))}
     </div>
   );

@@ -15,3 +15,7 @@
   @apply border-green-600 bg-green-500;
   @apply hover:bg-green-500/90;
 }
+
+.square{
+  aspect-ratio: 1/1;
+}

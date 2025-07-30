@@ -1,24 +1,16 @@
 import React from 'react';
-import { NavLink } from "react-router";
 
-import { useOrchestrator } from '../orchestrator/interface.jsx';
-import { useSelector } from 'react-redux';
+import { useAtom } from 'jotai';
 
-import {PrimaryButton} from "../components/button.jsx"
-export default function IntegrationStatus() {
+import { integrationStatusAtomFamily } from "../atoms/integrations"
+import { useOrchestrator } from '../orchestrator/interface';
+
+import {PrimaryButton} from "../components/button"
+
+export const IntegrationStatusCard = ({id}) => {
   const orchestrator = useOrchestrator();
-  const integrationStatus = useSelector((state) => state.integrationStatus.value);
-
+  var [status, _] = useAtom(integrationStatusAtomFamily(id))
   return (
-    <div>
-      <header className="p-3">
-        <PrimaryButton>
-          <NavLink to="/" className="material-icons">arrow_back</NavLink>
-        </PrimaryButton>
-        <strong className="px-4 text-xl">Integration Status</strong>
-      </header>
-    <div className="grid grid-cols-1 p-4 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-4">
-      {Object.entries(integrationStatus).map(([id, status]) => (
         <div key={id} className="card gap-y-5 min-h-4xl p-4 break-inside-avoid-column">
           <div className="card-body p-0">
             <span className="card-title justify-between">
@@ -31,7 +23,7 @@ export default function IntegrationStatus() {
             </span>
             <span><strong>Integration ID:</strong> {id}</span><br />
             <span><strong>Status:</strong> {status.status}</span><br />
-            {status.hasError && <div>
+            {status.error !== null && status.error !== 0 && <div>
               <strong>Error Code: {status.error} ({status.errorDescription})</strong>
               <br/>
             </div>}
@@ -42,8 +34,5 @@ export default function IntegrationStatus() {
             {status.status === "stopped" && <PrimaryButton className="w-3/4" color="green" onClick={() => orchestrator.startIntegration(id)}>Start Integration</PrimaryButton>}
           </div>
         </div>
-      ))}
-    </div>
-    </div>
   )
 }

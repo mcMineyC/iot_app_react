@@ -1,8 +1,9 @@
-import { updateIntegrations, updateIntegration } from "../redux/integrationStatusSlice";
-import { updateState } from "../redux/stateSlice";
 import mqtt from "mqtt";
 import QueuedProcessor from "../utils/queue";
 import RouteMatcher from "../utils/routing";
+import {updateIntegrationsStatus, updateIntegrationStatus} from "../atoms/integrations"
+import {ClientStatus} from "../atoms/client"
+import {updateClientStatus} from "../atoms/client"
 
 function log(...parts){
   if(true)
@@ -12,10 +13,8 @@ function log(...parts){
 class OrchestratorApi {
   router = new RouteMatcher({
     "/orchestrator/fullStatus": (message) => {
-      var list = [];
-      Object.entries(message).forEach((entry) => {
-        var id = entry[0];
-        var stats = entry[1]
+      var list = {};
+      Object.entries(message).forEach(([id, stats]) => {
         list.push({
           id,
           name: stats.name,
@@ -27,15 +26,17 @@ class OrchestratorApi {
         })
       })
       console.log(list)
-      this.dispatch(updateIntegration(message))
+      // this.dispatch(updateIntegration(message))
     },
     "/orchestrator/state": (message) => {
       console.log("We have el state", message)
-      this.dispatch(updateState(message.integrationStates))
-      this.dispatch(updateIntegration(message.integrations))
+      updateIntegrationsStatus(message.integrations)
+      // this.dispatch(updateState(message.integrationStates))
+      // this.dispatch(updateIntegration(message.integrations))
     },
     "/orchestrator/status/:integrationId": (message, params) => {
-      this.dispatch(updateIntegration({[params.integrationId]: message}))
+      console.log("Have new state for",params.integrationId, message)
+      updateIntegrationsStatus({[params.integrationId]: message})
     },
     "/orchestrator/integration/:integrationId/online": (message, params) => {
       if(message)
@@ -45,27 +46,30 @@ class OrchestratorApi {
     },
     "/:integrationId/powerState": (message, params) => {
       console.log("Integration", params.integrationId, "is now", message)
-      this.dispatch(updateState({[params.integrationId]: {powerState: message}}))
+      // this.dispatch(updateState({[params.integrationId]: {powerState: message}}))
     }
   })
-  constructor(dispatch){
-    this.dispatch = dispatch;
+  constructor(){
+    // this.dispatch = dispatch;
     this.connected = false;
     this.queue = new QueuedProcessor(false, (item) => {
       this.mqtt.publish(item.topic, typeof item.message == "object" ? JSON.stringify(item.message) : item.message)
       console.log("Processed message for topic", item.topic)
     })
     // this.messageQueue = []; // {topic: string, message: object}
+    updateClientStatus(ClientStatus.Connecting)
     this.mqtt = mqtt.connect("mqtt://localhost:1882")
     this.mqtt.on("connect", () => {
       console.log("MQTT has connected")
       this.connected = true;
+      updateClientStatus(ClientStatus.Connected)
       this.queue.allowProcessing();
       this.getFullState();
     })
     this.mqtt.on("disconnect", ()=> {
       console.log("MQTT disconnected");
       this.connected = false;
+      updateClientStatus(ClientStatus.Disconnected)
       this.queue.disallowProcessing();
     })
     this.mqtt.subscribe("#")
@@ -95,6 +99,7 @@ class OrchestratorApi {
   startIntegration(id) {
     log("Starting integration with ID:", id)
     this.sendMessage(`/orchestrator/integration/start`, id);
+
   }
 
   togglePowerState(id){
@@ -106,15 +111,17 @@ class OrchestratorApi {
     this.queue.add({topic, message})
   }
   static instance = null;
-  static getInstance(dispatch) {
+  static getInstance() {
         // Check if an instance already exists.
         // If not, create one.
         if (this.instance === null) {
-            this.instance = new OrchestratorApi(dispatch);
+            // if(dispatch === undefined)
+            //   throw "Dispatcher must be provided"
+            this.instance = new OrchestratorApi();
         }
         // Return the instance.
         return this.instance;
-    }
+  }
 }
 
 export default OrchestratorApi;

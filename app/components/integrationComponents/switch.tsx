@@ -1,10 +1,9 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { PrimaryButton } from '../button.jsx';
 
 export const Switch = ({ integrationId }) => {
   console.log("Switch component for integrationId:", integrationId);
-  const state = useSelector((state) => state.state.value);
+  var state = {}
   console.log(state);
   const integration = Object.entries(state).find(([key, int]) => key === integrationId);
 

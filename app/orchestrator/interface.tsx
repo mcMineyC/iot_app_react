@@ -1,11 +1,12 @@
 import mqttAPI from './mqtt';
-import { createContext, useContext } from 'react';
-import { useDispatch } from 'react-redux';
+import {waitUntil} from "../utils/waitUntil"
+import { jotaiStore } from '../atoms/store';
+import { clientStatusAtom, ClientStatus } from "../atoms/client"
+import { createContext, useContext, use } from 'react';
 
 const OrchestratorContext = createContext(null);
 
 export const OrchestratorProvider = ({ children }) => {
-    const dispatch = useDispatch();
     
     // let orchestratorInterface;
     // if(window.electronAPI) {
@@ -15,7 +16,7 @@ export const OrchestratorProvider = ({ children }) => {
     //     console.log("No api found to interface with native :(")
     //     orchestratorInterface = new dummyAPI();
     // }
-    let orchestratorInterface = mqttAPI.getInstance(dispatch);
+    let orchestratorInterface = mqttAPI.getInstance();
     console.log("Rebuilding orchestrator provider")
     // window.api = orchestratorInterface;
     
@@ -33,3 +34,9 @@ export const useOrchestrator = () => {
     }
     return context;
 };
+export const orchestratorAPI = mqttAPI.getInstance()
+
+export const OrchestratorConnectionWaiter = () => {
+  use(waitUntil(() => jotaiStore.get(clientStatusAtom) == ClientStatus.Connected, 100))
+  return <></>
+}

@@ -6,10 +6,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
-import store from "./redux/store";
-import {Provider} from 'react-redux';
-import {OrchestratorProvider} from "./orchestrator/interface";
+import { Suspense } from 'react';
+import {Provider} from "jotai"
+import {jotaiStore} from "./atoms/store"
+import {OrchestratorProvider, OrchestratorConnectionWaiter} from "./orchestrator/interface";
+import Loading from "./routes/loading"
 
 // import type { Route } from "./+types/root";
 import "./app.css";
@@ -45,9 +46,12 @@ export function Layout({ children }) {
         <Links />
       </head>
       <body>
-        <Provider store={store}>
+        <Provider store={jotaiStore}>
           <OrchestratorProvider>
-            {children}
+            <Suspense fallback={<Loading/>}>
+              <OrchestratorConnectionWaiter/>
+              {children}
+            </Suspense>
           </OrchestratorProvider>
         </Provider>
         <ScrollRestoration />

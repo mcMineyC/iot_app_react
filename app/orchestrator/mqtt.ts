@@ -2,6 +2,9 @@ import mqtt from "mqtt";
 import QueuedProcessor from "../utils/queue";
 import RouteMatcher from "../utils/routing";
 import {updateIntegrationsStatus, updateIntegrationStatus} from "../atoms/integrations"
+import {updateIntegrationsState, updateIntegrationState} from "../atoms/integrationState"
+import type {IntegrationStatus} from "../atoms/integrations"
+import type {Dictionary} from "../utils/types"
 import {ClientStatus} from "../atoms/client"
 import {updateClientStatus} from "../atoms/client"
 
@@ -12,31 +15,21 @@ function log(...parts){
 
 class OrchestratorApi {
   router = new RouteMatcher({
-    "/orchestrator/fullStatus": (message) => {
+    "/orchestrator/status": (message: Dictionary<IntegrationStatus>) => {
       var list = {};
-      Object.entries(message).forEach(([id, stats]) => {
-        list.push({
-          id,
-          name: stats.name,
-          state: stats.status,
-          error: stats.error != 0 ? {
-            code: stats.error,
-            description: stats.errorDescription
-          } : null
-        })
-      })
+      updateIntegrationsStatus(message)
       console.log(list)
       // this.dispatch(updateIntegration(message))
     },
     "/orchestrator/state": (message) => {
       console.log("We have el state", message)
-      updateIntegrationsStatus(message.integrations)
+      updateIntegrationsState(message)
       // this.dispatch(updateState(message.integrationStates))
       // this.dispatch(updateIntegration(message.integrations))
     },
     "/orchestrator/status/:integrationId": (message, params) => {
-      console.log("Have new state for",params.integrationId, message)
-      updateIntegrationsStatus({[params.integrationId]: message})
+      console.log("Have new status for",params.integrationId, message)
+      updateIntegrationStatus(params.integrationId, message as IntegrationStatus)
     },
     "/orchestrator/integration/:integrationId/online": (message, params) => {
       if(message)
@@ -87,10 +80,10 @@ class OrchestratorApi {
   }
 
   getFullState() {
-    this.sendMessage("/orchestrator/getdata/state", "")
+    this.sendMessage("/orchestrator/getdata/fullState", "")
   }
   getIntegrationStatus() {
-    this.sendMessage("/orchestrator/getdata/fullStatus", "")
+    this.sendMessage("/orchestrator/getdata/status", "")
   }
   stopIntegration(id) {
     log("Stopping integration with ID:", id)

@@ -2,6 +2,7 @@
 import { jotaiStore } from './store';
 import { atom } from 'jotai';
 import { atomFamily } from 'jotai/utils';
+import type {IntegrationIdRecord} from "../utils/types"
 
 export type IntegrationStatusMap = {
   [id: string]: Partial<IntegrationStatus>
@@ -15,13 +16,17 @@ export type IntegrationStatus = {
   errorDescription: string;
 };
 
-export const registeredIdsAtom = atom<string[]>([]);
+export const registeredIdsAtom = atom<IntegrationIdRecord>({
+  state: [],
+  status: []
+});
+
 
 export const integrationStatusAtomFamily = atomFamily((id: string) =>
   atom<IntegrationStatus>({
     id,
     name: null,
-    status: 'stopped',
+    status: null,
     error: null,
     errorDescription: null,
   })
@@ -38,8 +43,8 @@ export const updateIntegrationsStatus = function(data: IntegrationStatusMap) {
     const atom = integrationStatusAtomFamily(id)
     const atomValue = jotaiStore.get(atom);
     const currentIds = jotaiStore.get(registeredIdsAtom);
-    if (!currentIds.includes(id)) {
-      jotaiStore.set(registeredIdsAtom, [...currentIds, id]);
+    if (!currentIds.status.includes(id)) {
+      jotaiStore.set(registeredIdsAtom, {status: [...currentIds.status, id], state: currentIds.state});
     }
     const newValue: IntegrationStatus = {
       ...atomValue,

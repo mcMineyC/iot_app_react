@@ -1,6 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router";
 import {useOrchestrator} from "../orchestrator/interface";
+import { registeredIdsAtom } from "../atoms/integrations"
+import { integrationStateAtomFamily } from "../atoms/integrationState"
+import {useAtom} from "jotai"
+
 
 import {PrimaryButton} from "../components/button";
 import { Switch } from "../components/integrationComponents/switch";
@@ -14,8 +18,11 @@ export function meta({}) {
 
 export default function Home() {
   var orchestrator = useOrchestrator();
-  // const state = useSelector((state) => state.state.value);
-  // const integrations = useSelector((state) => state.integrationStatus.value);
+  var [integrationIds, _] = useAtom(registeredIdsAtom)
+  var states = {};
+  integrationIds.state.forEach(
+    (i) => states[i] = useAtom(integrationStateAtomFamily(i))
+  )
   return (
     <div>
       <h1>Hello.  This is index</h1>
@@ -30,6 +37,7 @@ export default function Home() {
       {// {Object.keys(integrations).map((integrationId) => (
       //   <Switch key={integrationId} integrationId={integrationId} />
       // ))}
+        JSON.stringify(states, null, 2)
       }
     </div>
   );

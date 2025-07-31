@@ -21,7 +21,8 @@
     "verbatimModuleSyntax": true,
     "noEmit": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true
     // "strict": true
   }
 }

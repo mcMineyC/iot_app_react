@@ -1,8 +1,9 @@
-import mqttAPI from './mqtt';
+import mqttAPI from './mqtt.ts';
 import {waitUntil} from "../utils/waitUntil"
 import { jotaiStore } from '../atoms/store';
+import { useAtomValue } from 'jotai'
 import { clientStatusAtom, ClientStatus } from "../atoms/client"
-import { createContext, useContext, use } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const OrchestratorContext = createContext(null);
 
@@ -36,7 +37,17 @@ export const useOrchestrator = () => {
 };
 export const orchestratorAPI = mqttAPI.getInstance()
 
-export const OrchestratorConnectionWaiter = () => {
-  use(waitUntil(() => jotaiStore.get(clientStatusAtom) == ClientStatus.Connected, 100))
-  return <></>
-}
+export const OrchestratorConnectionWaiter = ({ children, fallback }: {children: React.ReactNode, fallback: React.ReactNode}) => {
+  const clientStatus = useAtomValue(clientStatusAtom);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (clientStatus === ClientStatus.Connected) {
+      setIsReady(true);
+    }
+  }, [clientStatus]);
+
+  if (!isReady) return fallback;
+
+  return <>{children}</>;
+};

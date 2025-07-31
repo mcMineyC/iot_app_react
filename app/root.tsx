@@ -48,10 +48,9 @@ export function Layout({ children }) {
       <body>
         <Provider store={jotaiStore}>
           <OrchestratorProvider>
-            <Suspense fallback={<Loading/>}>
-              <OrchestratorConnectionWaiter/>
+            <OrchestratorConnectionWaiter fallback={<Loading/>}>
               {children}
-            </Suspense>
+            </OrchestratorConnectionWaiter>
           </OrchestratorProvider>
         </Provider>
         <ScrollRestoration />

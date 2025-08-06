@@ -23,9 +23,10 @@ export default function Home() {
 
   // Memoize the evaluator function to prevent unnecessary re-renders
   const evaluatePowerState = useCallback((v: string) => {
-    console.log("[Home] evaluating power state:", v);
+    // console.log("[Home] evaluating power state:", v);
     return v === "on";
   }, []);
+  var [integrationIds, _] = useAtom(registeredIdsAtom)
 
   return (
     <div>
@@ -54,11 +55,15 @@ export default function Home() {
             saturation: state.saturation,
           })}
         />
-        <Switch
-          integrationId="broom-closet-ending"
-          property="/powerState"
-          evaluator={(state) => state === "on"}
-        />
+        {
+          integrationIds.state.filter((i) => i !== "bed-bulb" && i !== "closet-light-plug").map((id) => 
+            <Switch
+              integrationId={id}
+              property="/powerState"
+              evaluator={evaluatePowerState}
+            />
+          )
+        }
       </div>
     </div>
   );

@@ -39,7 +39,7 @@ export const updateIntegrationStatus = function(id: string, value: Partial<Integ
 export const updateIntegrationsStatus = function(data: IntegrationStatusMap) {
   for (var [id, value] of Object.entries(data)){
     value.id = id;
-    // console.log(id+":",value)
+    console.log(id+":",value)
     const atom = integrationStatusAtomFamily(id)
     const atomValue = jotaiStore.get(atom);
     const currentIds = jotaiStore.get(registeredIdsAtom);
